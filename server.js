@@ -6,8 +6,10 @@ const salespersonRoutes = require('./routes/salesperson');
 const customerRoutes = require('./routes/customer');
 const authRoutes = require('./routes/auth');
 const connectDB = require('./config/db');
+const cors = require('cors');
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB
