@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['super_admin', 'business_admin', 'salesperson', 'customer'], required: true },
   businessId: { type: mongoose.Schema.Types.ObjectId, ref: 'Business' }, // Reference to the associated business
   createdAt: { type: Date, default: Date.now },
+  isBlocked: { type: Boolean, default: false }, // Add the isBlocked field
 });
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();

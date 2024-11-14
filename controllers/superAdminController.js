@@ -56,3 +56,56 @@ exports.createSuperAdmin = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
   };
+
+  exports.blockBusiness = async (req, res) => {
+    const { businessId } = req.params;
+    const { isBlocked } = req.body;
+  
+    if (typeof isBlocked !== 'boolean') {
+      return res.status(400).json({ message: 'Invalid value for isBlocked. It should be a boolean.' });
+    }
+  
+    try {
+      // Find all users (Customers and Salespersons) related to the businessId
+      const usersToBlock = await User.find({
+        businessId,
+        role: { $in: ['salesperson', 'customer','business_admin'] },
+        isBlocked: { $ne: isBlocked }  // Only update users that are not already in the desired state
+      });
+  
+      if (usersToBlock.length === 0) {
+        return res.status(404).json({ message: 'No customers or salespersons found for this business' });
+      }
+  
+      // Update the `isBlocked` status for all found users
+      const updatedUsers = await User.updateMany(
+        { _id: { $in: usersToBlock.map(user => user._id) } },
+        { $set: { isBlocked } }
+      );
+  
+      res.status(200).json({
+        message: isBlocked ? 'All business admin, customers and salespersons have been blocked.' : 'All business admin, customers and salespersons have been unblocked.',
+        affectedUsers: updatedUsers.nModified  // Number of users modified
+      });
+    } catch (error) {
+      console.error('Error blocking/unblocking users:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+
+  exports.getBusinessAdmins = async (req, res) => {
+ 
+    
+    try {
+      const businessAdmins = await User.find({ role: 'business_admin' }).select('-password'); // Exclude password
+  
+      if (!businessAdmins.length) {
+        return res.status(404).json({ message: 'No business admins found.' });
+      }
+  
+      res.status(200).json(businessAdmins);
+    } catch (error) {
+      console.error('Error fetching business admins:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  }

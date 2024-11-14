@@ -14,7 +14,9 @@ exports.login = async (req, res) => {
     }
 
     // Test comparison
-    
+    if (user.isBlocked) {
+      return res.status(403).json({ message: 'Your account has been blocked. Please contact the administrator.' });
+    }
     // Compare the password with the hashed password in the database
     const isMatch = await bcrypt.compare(password, user.password);
     
