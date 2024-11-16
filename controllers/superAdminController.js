@@ -1,6 +1,7 @@
 // controllers/superAdminController.js
 const User = require('../models/User');
 const Business = require('../models/Business');
+const Enquiry = require('../models/Enquiry')
 const bcrypt = require('bcryptjs');
 
 exports.createBusinessAdmin = async (req, res) => {
@@ -108,4 +109,47 @@ exports.createSuperAdmin = async (req, res) => {
       console.error('Error fetching business admins:', error);
       res.status(500).json({ message: 'Server error' });
     }
+  };
+
+  // Get all enquiries
+exports.GetEnquiries = async (req, res) => {
+  try {
+    const enquiries = await Enquiry.find().sort({ createdAt: -1 }); // Most recent enquiries first
+    res.status(200).json(enquiries);
+  } catch (error) {
+    console.error('Error fetching enquiries:', error);
+    res.status(500).json({ message: 'Failed to fetch enquiries.' });
   }
+}
+
+// Update enquiry status (e.g., mark as contacted or closed)
+exports.UpdateEnquiry = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+
+  // Validate status
+  if (!['new', 'contacted', 'closed'].includes(status)) {
+    return res.status(400).json({ message: 'Invalid status value.' });
+  }
+
+  try {
+    const updatedEnquiry = await Enquiry.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedEnquiry) {
+      return res.status(404).json({ message: 'Enquiry not found.' });
+    }
+
+    res.status(200).json({
+      message: 'Enquiry status updated successfully.',
+      enquiry: updatedEnquiry
+    });
+  } catch (error) {
+    console.error('Error updating enquiry:', error);
+    res.status(500).json({ message: 'Failed to update enquiry status.' });
+  }
+};
+

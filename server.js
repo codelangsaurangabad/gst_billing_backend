@@ -5,6 +5,7 @@ const superAdminRoutes = require('./routes/superAdmin');
 const salespersonRoutes = require('./routes/salesperson');
 const customerRoutes = require('./routes/customer');
 const authRoutes = require('./routes/auth');
+const enquiryRoutes = require('./routes/enquiries')
 const connectDB = require('./config/db');
 const cors = require('cors');
 
@@ -22,6 +23,7 @@ app.use('/admin', adminRoutes);
 app.use('/salesperson', salespersonRoutes);
 app.use('/customer', customerRoutes);
 app.use('/auth', authRoutes);
+app.use('/enquiry', enquiryRoutes);
 
 app.listen(3000, () => {
   console.log('Server running on http://localhost:3000');
