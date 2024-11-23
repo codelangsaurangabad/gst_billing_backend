@@ -50,8 +50,7 @@ exports.CreateSalesPerson = async (req, res) => {
     });
 
     // Hash the password before saving
-    const hashedPassword = await bcrypt.hash(password, 10);
-    salesperson.password = hashedPassword;
+ 
 
     await salesperson.save();
     res.status(201).json({ message: 'Salesperson created successfully' });
@@ -84,11 +83,11 @@ exports.CreateCustomer = async (req, res) => {
     }
 
     // Step 1: Create a User entry
-    const hashedPassword = await bcrypt.hash(password, 10);
+   
     const user = new User({
       name,
       email,
-      password: hashedPassword,
+      password,
       role: 'customer',
     });
     await user.save();
